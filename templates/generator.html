@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Генератор паролей | WebPM</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: "Segoe UI", sans-serif;
+      }
+
+      body {
+        background-color: #f3f4f6;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 10px 20px;
+      }
+
+      .navbar {
+        width: 100%;
+        background-color: #111827;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 40px;
+        border-radius: 12px;
+        margin-bottom: 40px;
+      }
+
+      .navbar a {
+        color: #93c5fd;
+        text-decoration: none;
+        margin-left: 24px;
+        font-weight: 500;
+        transition: color 0.3s;
+      }
+
+      .navbar a:hover {
+        color: #60a5fa;
+      }
+
+      .container {
+        max-width: 600px;
+        width: 100%;
+        background: white;
+        padding: 32px;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      }
+
+      h2 {
+        text-align: center;
+        margin-bottom: 24px;
+        font-size: 26px;
+        color: #1f2937;
+      }
+
+      label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+        font-size: 15px;
+        color: #374151;
+      }
+
+      input[type="checkbox"],
+      input[type="range"],
+      input[type="number"] {
+        cursor: pointer;
+      }
+
+      input[type="range"] {
+        width: 100%;
+      }
+
+      .btn {
+        padding: 10px 16px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: background 0.3s ease;
+      }
+
+      .btn-blue {
+        background-color: #3b82f6;
+        color: white;
+        margin-top: 16px;
+      }
+
+      .btn-blue:hover {
+        background-color: #2563eb;
+      }
+
+      .password-display {
+        background: #f9fafb;
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid #d1d5db;
+        margin: 16px 0;
+        font-weight: 500;
+        font-size: 16px;
+        text-align: center;
+        word-break: break-all;
+        user-select: all;
+      }
+
+      .options {
+        margin-top: 20px;
+      }
+
+      @media (max-width: 600px) {
+        .navbar {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="navbar">
+      <div><strong>WebPM</strong></div>
+      <div>
+        <a href="{{ url_for('biometric_page') }}">Мои пароли</a>
+        <a href="#">Генератор паролей</a>
+        <a href="{{ url_for('logout') }}">Выход</a>
+      </div>
+    </div>
+
+    <div class="container">
+      <h2>Генератор паролей</h2>
+
+      <label>
+        Длина пароля:
+        <input type="number" id="length" min="4" max="64" value="12" />
+      </label>
+
+      <div class="options">
+        <label
+          ><input type="checkbox" id="include-uppercase" checked /> Прописные
+          буквы</label
+        >
+        <label
+          ><input type="checkbox" id="include-lowercase" checked /> Строчные
+          буквы</label
+        >
+        <label
+          ><input type="checkbox" id="include-numbers" checked /> Цифры</label
+        >
+        <label
+          ><input type="checkbox" id="include-symbols" /> Специальные
+          символы</label
+        >
+      </div>
+
+      <button class="btn btn-blue" id="generate">Сгенерировать</button>
+
+      <div class="password-display" id="result">Ваш пароль появится здесь</div>
+      <button class="btn btn-blue" id="copy">Скопировать</button>
+    </div>
+
+    <script>
+      const result = document.getElementById("result");
+      const generateBtn = document.getElementById("generate");
+      const copyBtn = document.getElementById("copy");
+
+      function generatePassword() {
+        const length = +document.getElementById("length").value;
+        const includeUpper =
+          document.getElementById("include-uppercase").checked;
+        const includeLower =
+          document.getElementById("include-lowercase").checked;
+        const includeNumbers =
+          document.getElementById("include-numbers").checked;
+        const includeSymbols =
+          document.getElementById("include-symbols").checked;
+
+        const upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const lower = "abcdefghijklmnopqrstuvwxyz";
+        const numbers = "0123456789";
+        const symbols = "!@#$%^&*()_+-=[]{}|;:,.<>?";
+
+        let chars = "";
+        if (includeUpper) chars += upper;
+        if (includeLower) chars += lower;
+        if (includeNumbers) chars += numbers;
+        if (includeSymbols) chars += symbols;
+
+        if (chars.length === 0) {
+          result.textContent = "Выберите хотя бы один тип символов!";
+          return;
+        }
+
+        let password = "";
+        for (let i = 0; i < length; i++) {
+          const randomIndex = Math.floor(Math.random() * chars.length);
+          password += chars[randomIndex];
+        }
+
+        result.textContent = password;
+      }
+
+      generateBtn.addEventListener("click", generatePassword);
+
+      copyBtn.addEventListener("click", () => {
+        const text = result.textContent;
+        navigator.clipboard.writeText(text).then(() => {
+          copyBtn.textContent = "Скопировано!";
+          setTimeout(() => {
+            copyBtn.textContent = "Скопировать";
+          }, 1500);
+        });
+      });
+    </script>
+  </body>
+</html>

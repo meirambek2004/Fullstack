@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <title>WebPM</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: "Segoe UI", sans-serif;
+      }
+
+      body {
+        background-color: #f3f4f6;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 10px 20px;
+      }
+
+      .navbar {
+        width: 100%;
+        background-color: #111827;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 40px;
+        border-radius: 12px;
+        margin-bottom: 40px;
+      }
+
+      .navbar a {
+        color: #93c5fd;
+        text-decoration: none;
+        margin-left: 24px;
+        font-weight: 500;
+        transition: color 0.3s;
+      }
+
+      .navbar a:hover {
+        color: #60a5fa;
+      }
+
+      .container {
+        max-width: 1000px;
+        width: 100%;
+        background: white;
+        padding: 32px;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      }
+
+      h2 {
+        text-align: center;
+        margin-bottom: 32px;
+        font-size: 26px;
+        color: #1f2937;
+      }
+
+      .form-inline {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .form-inline .left-controls {
+        display: flex;
+        gap: 12px;
+      }
+
+      .form-inline .search-bar {
+        display: flex;
+        gap: 10px;
+      }
+
+      input[type="text"] {
+        padding: 10px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        width: 220px;
+        background: #f9fafb;
+      }
+
+      .btn {
+        padding: 10px 16px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: background 0.3s ease;
+      }
+
+      .btn-blue {
+        background-color: #3b82f6;
+        color: white;
+      }
+
+      .btn-blue:hover {
+        background-color: #2563eb;
+      }
+
+      .btn-red {
+        background-color: #ef4444;
+        color: white;
+      }
+
+      .btn-red:hover {
+        background-color: #dc2626;
+      }
+
+      .btn-gray {
+        background-color: #6b7280;
+        color: white;
+      }
+
+      .btn-gray:hover {
+        background-color: #4b5563;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      }
+
+      th,
+      td {
+        padding: 14px 16px;
+        text-align: left;
+        border-bottom: 1px solid #e5e7eb;
+      }
+
+      th {
+        background-color: #f9fafb;
+        color: #374151;
+        font-size: 15px;
+        text-transform: uppercase;
+      }
+
+      td a {
+        color: #3b82f6;
+        text-decoration: none;
+      }
+
+      td a:hover {
+        text-decoration: underline;
+      }
+      #add-form input {
+        padding: 10px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        background: #f9fafb;
+      }
+
+      @media (max-width: 600px) {
+        .form-inline {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .form-inline .search-bar {
+          width: 100%;
+        }
+
+        input[type="text"] {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="navbar">
+      <div><strong>WebPM</strong></div>
+      <div>
+        <a href="">Мои пароли</a>
+        <a href="{{ url_for('generator') }}">Генератор паролей</a>
+        <a href="{{ url_for('logout') }}">Выход</a>
+      </div>
+    </div>
+
+    <div class="container">
+      <h2>Мои пароли</h2>
+
+      <div class="form-inline">
+        <div class="left-controls">
+          <button class="btn btn-blue">+ Добавить</button>
+        </div>
+        <div class="search-bar">
+          <input type="text" placeholder="Введите значение..." />
+          <button class="btn btn-gray">🔍</button>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Сайт</th>
+            <th>Логин</th>
+            <th>Пароль</th>
+            <th>Действия</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr></tr>
+        </tbody>
+      </table>
+    </div>
+    <div id="add-form" style="display: none; margin-bottom: 24px">
+      <form
+        id="password-form"
+        style="display: flex; flex-direction: column; gap: 12px"
+      >
+        <input
+          type="text"
+          id="site-name"
+          placeholder="Название сайта"
+          required
+        />
+        <input type="text" id="site-link" placeholder="Ссылка" required />
+        <input type="text" id="site-login" placeholder="Логин" required />
+        <input
+          type="password"
+          id="site-password"
+          placeholder="Пароль"
+          required
+        />
+        <button type="submit" class="btn btn-blue">Сохранить</button>
+      </form>
+    </div>
+  </body>
+  <script>
+    const addButton = document.querySelector(".btn-blue");
+    const formContainer = document.getElementById("add-form");
+    const passwordForm = document.getElementById("password-form");
+    const tableBody = document.querySelector("table tbody");
+
+    // Показ/скрытие формы
+    addButton.addEventListener("click", () => {
+      formContainer.style.display =
+        formContainer.style.display === "none" ? "block" : "none";
+    });
+
+    // Обработка формы добавления
+    passwordForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const name = document.getElementById("site-name").value;
+      const link = document.getElementById("site-link").value;
+      const login = document.getElementById("site-login").value;
+      const password = document.getElementById("site-password").value;
+
+      const newRow = document.createElement("tr");
+      newRow.innerHTML = `
+  <td><a href="${link}" target="_blank">${name}</a></td>
+  <td>${login}</td>
+  <td class="password-cell" data-password="${password}">••••••••</td>
+  <td>
+    <button class="btn btn-blue get-btn">Получить</button>
+    <button class="btn btn-red delete-btn">Удалить</button>
+  </td>
+`;
+
+      tableBody.appendChild(newRow);
+
+      passwordForm.reset();
+      formContainer.style.display = "none";
+    });
+
+    // Делегирование событий для кнопок "Удалить"
+    tableBody.addEventListener("click", function (e) {
+      const row = e.target.closest("tr");
+
+      // Удаление
+      if (e.target.classList.contains("delete-btn")) {
+        if (row) row.remove();
+      }
+
+      // Получение пароля
+      if (e.target.classList.contains("get-btn")) {
+        const passwordCell = row.querySelector(".password-cell");
+        const realPassword = passwordCell.dataset.password;
+
+        // Показать пароль на 3 секунды
+        passwordCell.textContent = realPassword;
+        e.target.disabled = true;
+
+        setTimeout(() => {
+          passwordCell.textContent = "••••••••";
+          e.target.disabled = false;
+        }, 3000);
+      }
+    });
+  </script>
+</html>
